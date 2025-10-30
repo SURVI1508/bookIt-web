@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (selectedSlot.booked + qty > selectedSlot.capacity) {
+    if (selectedSlot.booked + Number(qty) > selectedSlot.capacity) {
       return NextResponse.json(
         { success: false, message: "Not enough capacity" },
         { status: 400 }
