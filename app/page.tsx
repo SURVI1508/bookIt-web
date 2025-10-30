@@ -1,3 +1,10 @@
+import HomePage from "../components/HomePage";
+import AppLayout from "../components/Layouts/AppLayout";
+
 export default function Home() {
-  return "home";
+  return (
+    <AppLayout>
+      <HomePage />
+    </AppLayout>
+  );
 }

@@ -13,6 +13,8 @@ export async function GET(
       : (context.params as { id: string });
   try {
     await connectDB();
+    // const product = await Product.findOne({ slug: params?.id });
+
     const product = await Product.findById(params.id);
     if (!product)
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
