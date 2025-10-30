@@ -1,11 +1,14 @@
 "use client";
 
-import { errorToast } from "@/utils/toastMessage";
+import { errorToast, successToast } from "@/utils/toastMessage";
 import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import Button from "../common/Button";
 import { useRouter } from "next/navigation";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { useForm } from "@/hooks/useForm";
+import { bookingSchema } from "@/validation/bookingSchema";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface CheckoutData {
@@ -67,8 +70,28 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
   const [agree, setAgree] = useState(false);
   const [promoLoading, setPromoloading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [bookingData, setBookingData] = useState<BookingData>({});
   const [appliedPromo, setApliedPromo] = useState<PromoData>({});
+  const {
+    formData,
+    setFormData,
+    handleChange,
+    handleSubmit,
+    errors,
+    setErrors,
+    reset,
+  } = useForm<BookingData>({
+    defaultValues: {
+      productId: "",
+      date: "",
+      time: "",
+      qty: 1,
+      promoCode: "",
+      name: "",
+      email: "",
+    },
+    schema: bookingSchema,
+  });
+
   const { time, date, id, quantity } = data;
   const { title, price } = product || {};
   const router = useRouter();
@@ -76,7 +99,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
   const qty = Number(quantity) || 0;
   const base = price?.basePrice || 0;
   const subtotal = base * qty;
-  const total = subtotal + tax;
 
   const validatePromo = async (newCode: string) => {
     setPromoloading(true);
@@ -92,9 +114,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
       const { code, discountValue, discountType } = response?.data?.promo;
       setApliedPromo({ code, discountValue, discountType });
       setPromoloading(false);
+      successToast("Coupon applied ");
     } catch (err) {
       setPromoloading(false);
       setApliedPromo({});
+      handleChange("promoCode", "");
       if (err && typeof err === "object" && "response" in err) {
         const axiosError = err as {
           response?: {
@@ -106,29 +130,29 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
 
         const errorMessage =
           axiosError.response?.data?.error || "Something went wrong!";
-        console.log(errorMessage);
         errorToast(errorMessage);
       } else {
-        console.error("Unexpected error:", err);
         errorToast("Unexpected error occurred!");
       }
     }
   };
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setBookingData((prev) => ({ ...prev, [name]: value }));
+    handleChange(name as keyof BookingData, value);
   };
 
-  const createBooking = async () => {
+  const onSubmit = async () => {
     setLoading(true);
     try {
       const response = await axios({
         method: "POST",
         url: `${BASE_URL}/api/bookings`,
-        data: bookingData,
+        data: formData,
       });
       setLoading(false);
-      router.replace("/thanks");
+      const { booking, referenceNumber } = response?.data?.data;
+      router.replace(`/thanks?ref=${referenceNumber}`);
     } catch (err) {
       setLoading(false);
       if (err && typeof err === "object" && "response" in err) {
@@ -155,9 +179,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
     discountType?: "fixed" | "percent" | "",
     discountValue?: number
   ): number => {
-    // Convert basePrice to number
-    const price =
-      typeof basePrice === "string" ? parseFloat(basePrice) : basePrice;
+    const price = Number(basePrice);
 
     // If no discount or invalid values, return base price
     if (!discountType || !discountValue || discountValue <= 0) {
@@ -169,16 +191,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
     if (discountType === "fixed") {
       final = price - discountValue;
     } else if (discountType === "percent") {
-      final = price - (price * discountValue) / 100;
+      const discountAmount = (price * discountValue) / 100;
+      final = price - Math.min(discountAmount, price); // cap discount at subtotal
     }
 
-    // Ensure price never goes below 0
+    // Ensure final price never goes below 0
     return final > 0 ? final : 0;
   };
 
+  const totalPayable =
+    finalPrice(
+      subtotal,
+      appliedPromo?.discountType,
+      appliedPromo?.discountValue
+    ) + tax;
+
   useEffect(() => {
     if (product?._id) {
-      setBookingData((prev) => ({
+      setFormData((prev) => ({
         ...prev,
         productId: product._id,
         date,
@@ -189,20 +219,21 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
   }, [product?._id, date, time, quantity]);
 
   return (
-    <main className="w-full py-12">
-      <div className="container">
+    <main className="w-full min-h-screen py-12">
+      <div className="container space-y-5">
         {/* Header */}
-        <div className="flex items-center gap-2 text-gray-800 font-medium mb-6">
-          <button className="border border-gray-300 rounded px-3 py-1 text-sm hover:bg-gray-100">
-            ←
-          </button>
-          <span>Checkout</span>
-        </div>
+        <button
+          onClick={() => router.back()}
+          className="text-base hover:gap-2 transition-all duration-100 text-dark-15  inline-flex gap-3 items-center "
+        >
+          <FaArrowLeftLong />
+          Checkout
+        </button>
 
         {/* Main Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Form Section */}
-          <div className="flex-1 h-fit bg-gray-50 rounded-xl p-6 space-y-4">
+          <div className="flex-1 h-fit sm:bg-gray-50 sm:rounded-xl sm:p-6 space-y-4">
             {/* Name + Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -212,11 +243,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
                 <input
                   type="text"
                   placeholder="Your name"
-                  value={bookingData?.name}
+                  value={formData?.name || ""}
                   name="name"
-                  onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                  onChange={onChange}
+                  className="w-full rounded-sm  bg-grey-90 p-3 text-sm"
                 />
+                {errors?.name && (
+                  <span className="text-xs text-red-500">{errors?.name}</span>
+                )}
               </div>
               <div>
                 <label className="block text-sm text-gray-700 mb-1">
@@ -225,11 +259,14 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
                 <input
                   type="email"
                   placeholder="Your email"
-                  value={bookingData?.email}
+                  value={formData?.email || ""}
                   name="email"
-                  onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                  onChange={onChange}
+                  className="w-full rounded-sm  bg-grey-90 p-3 text-sm"
                 />
+                {errors?.email && (
+                  <span className="text-xs text-red-500">{errors?.email}</span>
+                )}
               </div>
             </div>
 
@@ -242,24 +279,29 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
                 <input
                   type="text"
                   placeholder="Enter promo code"
-                  value={bookingData?.promoCode}
+                  value={formData?.promoCode || ""}
                   onChange={(e) =>
-                    setBookingData((prev) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       promoCode: e.target.value,
                     }))
                   }
-                  className="flex-1 rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                  className="w-full flex-1 rounded-sm h-10 bg-grey-90 p-3 text-sm"
                 />
                 <Button
-                  disabled={!bookingData?.promoCode || promoLoading}
+                  disabled={!formData?.promoCode || promoLoading}
                   loading={promoLoading}
-                  onClick={() => validatePromo(bookingData?.promoCode ?? "")}
-                  className="bg-black text-white"
+                  onClick={() => validatePromo(formData?.promoCode ?? "")}
+                  className="bg-black text-white h-10 px-3 w-28 py-0"
                 >
                   Apply
                 </Button>
               </div>
+              {errors?.promoCode && (
+                <span className="text-xs text-red-500">
+                  {errors?.promoCode}
+                </span>
+              )}
             </div>
 
             {/* Checkbox */}
@@ -278,7 +320,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
           </div>
 
           {/* Right Summary Section */}
-          <aside className="w-full lg:w-80 bg-gray-50 rounded-xl p-6 space-y-4 border border-gray-200">
+          <aside className="w-full lg:w-80 bg-grey-95  rounded-2xl p-5 space-y-4 ">
             <div className="flex justify-between text-gray-700 text-sm">
               <span>Experience</span>
               <span className="font-medium">{title}</span>
@@ -304,27 +346,20 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
               <span>₹{subtotal}</span>
             </div>
 
-            <div className="flex justify-between text-gray-700 text-sm border-b pb-2">
+            <div className="flex justify-between text-gray-700 text-sm border-b border-grey-80 pb-2">
               <span>Taxes</span>
               <span>₹{tax}</span>
             </div>
 
             <div className="flex justify-between text-gray-900 text-lg font-semibold">
               <span>Total</span>
-              <span>
-                ₹
-                {finalPrice(
-                  total,
-                  appliedPromo?.discountType,
-                  appliedPromo?.discountValue
-                )}
-              </span>
+              <span>₹{totalPayable?.toFixed(2)}</span>
             </div>
 
             <Button
               disabled={!agree || loading}
               loading={loading}
-              onClick={() => createBooking()}
+              onClick={handleSubmit(() => onSubmit())}
               variant="primary"
               className="w-full"
             >

@@ -4,9 +4,10 @@ import Footer from "./Footer";
 
 interface AppLayoutProps {
   children: ReactNode;
+  query?: string;
 }
 
-const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+const AppLayout: React.FC<AppLayoutProps> = ({ children, query }) => {
   return (
     <>
       <Header />

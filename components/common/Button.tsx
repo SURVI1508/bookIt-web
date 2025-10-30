@@ -37,7 +37,7 @@ const Button: React.FC<ButtonProps> = ({
   href,
   height = "h-10",
   width = "px-4",
-  rounded = "rounded-[4px]",
+  rounded = "rounded-[7px]",
   className,
   iconClass = "w-5 h-5",
   loading = false,
@@ -45,7 +45,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   // Base + variant + custom colors
   const baseClasses =
-    "inline-flex items-center justify-center gap-2 font-medium transition duration-200 focus:outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50";
+    "inline-flex items-center text-sm justify-center gap-2  transition duration-200 focus:outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50";
   const variantClass = variantClasses[variant] || variantClasses.default;
   const customColors = `${bgColor ?? ""} ${textColor ?? ""}`;
   const classes = twMerge(

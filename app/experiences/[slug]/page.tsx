@@ -105,6 +105,7 @@ async function getProduct(slug: string): Promise<Product | null> {
     return null;
   }
 }
+
 const ExperiencesPage = async ({ params }: PageProps) => {
   const { slug } = await params;
   const product = await getProduct(slug);

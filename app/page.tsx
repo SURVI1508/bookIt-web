@@ -1,10 +1,15 @@
 import HomePage from "../components/HomePage";
 import AppLayout from "../components/Layouts/AppLayout";
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { q: string };
+}) {
+  const { q } = await searchParams;
   return (
     <AppLayout>
-      <HomePage />
+      <HomePage query={q} />
     </AppLayout>
   );
 }

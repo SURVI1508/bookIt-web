@@ -31,15 +31,6 @@ export async function GET(req: NextRequest) {
   const now = new Date();
   const expiry = new Date(promo.expiry);
 
-  console.log(
-    {
-      expiryISO: expiry.toISOString(),
-      nowISO: now.toISOString(),
-      expired: expiry.getTime() < now.getTime(),
-    },
-    "HIT"
-  );
-
   if (expiry.getTime() < now.getTime()) {
     promo.isActive = false;
     await promo.save();

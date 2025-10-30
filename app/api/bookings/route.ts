@@ -3,13 +3,16 @@ import Product from "@/models/Product";
 import Booking from "@/models/Booking";
 import Promo from "@/models/PromoCode";
 import { connectDB } from "@/lib/db";
-import { sendOrderConfirmation } from "../../../lib/mailer";
+import { generateReferenceNumber } from "@/utils/generateReferenceNumber";
+import { sendOrderConfirmation } from "@/lib/mailer";
+
 export async function POST(req: Request) {
   try {
     await connectDB();
     const body = await req.json();
 
-    const { productId, name, email, date, time, qty, promoCode } = body;
+    const { productId, name, email, date, time, promoCode } = body;
+    const qty = Number(body?.qty);
 
     if (!productId || !name || !email || !date || !time) {
       return NextResponse.json(
@@ -79,7 +82,7 @@ export async function POST(req: Request) {
 
       // ✅ Calculate subtotal before discount
       const basePrice = Number(product?.price?.basePrice || 0);
-      const quantity = Number(qty || 1);
+      const quantity = qty || 1;
       const subtotal = basePrice * quantity;
 
       // ✅ Handle both discount types
@@ -90,13 +93,11 @@ export async function POST(req: Request) {
       }
 
       appliedPromo = promo.code;
-
-      console.log(`Applied Promo: ${promo.code}, Discount: ${discount}`);
     }
 
     const subtotal = product?.price?.basePrice * qty;
 
-    const taxes = Math.round(subtotal * 0.06);
+    const taxes = 10;
     const total = subtotal + taxes - discount;
 
     // Create booking
@@ -114,7 +115,16 @@ export async function POST(req: Request) {
       status: "confirmed",
     });
 
-    await sendOrderConfirmation(email, product, name, date, time, qty);
+    await sendOrderConfirmation(
+      email,
+      product?.title,
+      productId,
+      name,
+      date,
+      time,
+      qty,
+      total
+    );
 
     // Update slot availability
     selectedSlot.booked += qty;
@@ -122,7 +132,12 @@ export async function POST(req: Request) {
       selectedSlot.status = "soldout";
     await product.save();
 
-    return NextResponse.json({ success: true, booking }, { status: 201 });
+    const refNumber = generateReferenceNumber();
+
+    return NextResponse.json(
+      { success: true, data: { booking, referenceNumber: refNumber } },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error("Booking creation failed:", error);
     return NextResponse.json(

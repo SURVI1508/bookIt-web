@@ -4,6 +4,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import Button from "../common/Button";
+import { useRouter } from "next/navigation";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { GoPlus } from "react-icons/go";
+import { HiMiniMinus } from "react-icons/hi2";
 interface Product {
   _id: string;
   title: string;
@@ -50,10 +54,11 @@ interface Product {
   }[];
 }
 const ExperienceDetailsPage = ({ data }: { data: Product }) => {
-  const [selectedDate, setSelectedDate] = useState("Oct 22");
+  const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [quantity, setQuantity] = useState(1);
-
+  const [maxQnt, setMaxQnt] = useState(10);
+  const router = useRouter();
   const {
     title,
     description,
@@ -62,9 +67,13 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
     safetyInfo,
   } = data || {};
   const price = data?.price?.basePrice;
-  const tax = 59;
+  const tax = 10;
   const total = price * quantity + tax; // matches example layout
 
+  const handleDateSelect = (value: string) => {
+    setSelectedTime("");
+    setSelectedDate(value);
+  };
   const availableSloats =
     dates?.find((item) => selectedDate == item?.date)?.slots || [];
 
@@ -75,21 +84,24 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
 
   return (
     <main className="w-full py-12">
-      <div className="container">
-        <div className="bg-white flex flex-col md:flex-row gap-8 p-6 md:p-10">
+      <div className="container space-y-5">
+        <button
+          onClick={() => router.back()}
+          className="text-base hover:gap-2 transition-all duration-100 text-dark-15 inline-flex gap-3 items-center "
+        >
+          <FaArrowLeftLong />
+          Details
+        </button>
+        <div className="bg-white flex flex-col md:flex-row gap-5">
           {/* Left Content */}
           <div className="flex-1 space-y-6">
-            <button className="text-sm text-gray-700 font-medium border border-gray-300 px-3 py-1 rounded hover:bg-gray-100 transition">
-              ← Details
-            </button>
-
-            <div className="relative w-full  rounded-xl overflow-hidden">
+            <div className="relative w-full aspect-video bg-grey-90  rounded-xl overflow-hidden">
               <Image
                 src={images[0]?.url}
                 alt={title}
                 height={500}
                 width={300}
-                className="w-full h-auto"
+                className="w-full"
               />
             </div>
 
@@ -107,7 +119,7 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
                 {dates?.map(({ date }: { date: string }) => (
                   <button
                     key={date}
-                    onClick={() => setSelectedDate(date)}
+                    onClick={() => handleDateSelect(date)}
                     className={`px-4 py-2 rounded-md border text-sm ${
                       selectedDate === date
                         ? "bg-yellow-55 text-gray-900 border-yellow-55"
@@ -140,7 +152,10 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
                     return (
                       <button
                         key={time}
-                        onClick={() => left > 0 && setSelectedTime(time)}
+                        onClick={() => {
+                          setSelectedTime(time);
+                          setMaxQnt(left);
+                        }}
                         disabled={left === 0}
                         className={`px-4 py-2 rounded-md border text-sm flex items-center gap-2 ${
                           left === 0
@@ -181,7 +196,7 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
           </div>
 
           {/* Right Sidebar */}
-          <aside className="w-full md:w-80 bg-gray-50 border border-gray-200 rounded-xl p-6 h-fit space-y-4">
+          <aside className="w-full md:w-80 bg-grey-95  rounded-2xl p-5 h-fit space-y-4">
             <div className="flex justify-between text-gray-700">
               <span>Starts at</span>
               <span className="font-medium text-gray-900">₹{price}</span>
@@ -191,17 +206,19 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
               <span className="text-gray-700">Quantity</span>
               <div className="flex items-center gap-3">
                 <button
+                  disabled={quantity == 1}
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="border rounded px-2 py-1 text-lg font-medium hover:bg-gray-100"
+                  className="border border-grey-80 aspect-square rounded p-1 text-sme font-medium text-dark-08 hover:bg-gray-100 disabled:opacity-45 disabled:cursor-not-allowed"
                 >
-                  −
+                  <HiMiniMinus />
                 </button>
                 <span>{quantity}</span>
                 <button
+                  disabled={quantity == maxQnt}
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="border rounded px-2 py-1 text-lg font-medium hover:bg-gray-100"
+                  className="border border-grey-80 aspect-square rounded p-1 text-sme font-medium text-dark-08 hover:bg-gray-100 disabled:opacity-45 disabled:cursor-not-allowed"
                 >
-                  +
+                  <GoPlus />
                 </button>
               </div>
             </div>
@@ -211,7 +228,7 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
               <span>₹{price * quantity}</span>
             </div>
 
-            <div className="flex justify-between text-gray-700 border-b pb-2">
+            <div className="flex justify-between text-gray-700 border-b border-grey-80 py-2">
               <span>Taxes</span>
               <span>₹{tax}</span>
             </div>
@@ -222,11 +239,16 @@ const ExperienceDetailsPage = ({ data }: { data: Product }) => {
             </div>
 
             <Button
-              href={`/checkout?quantity=${quantity}&date=${encodeURIComponent(
-                selectedDate
-              )}&time=${encodeURIComponent(selectedTime)}&id=${data?._id}`}
+              onClick={() =>
+                router.push(
+                  `/checkout?quantity=${quantity}&date=${encodeURIComponent(
+                    selectedDate
+                  )}&time=${encodeURIComponent(selectedTime)}&id=${data?._id}`
+                )
+              }
               className="w-full"
               variant="primary"
+              disabled={!selectedDate || !selectedTime}
             >
               Confirm
             </Button>

@@ -37,20 +37,20 @@ export async function sendOTP(to: string, otp: string): Promise<void> {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("✅ OTP email sent:", info.messageId);
   } catch (error) {
-    console.error("❌ Error sending OTP email:", error);
     throw new Error("Could not send OTP email");
   }
 }
 
 export async function sendOrderConfirmation(
   to: string,
-  product: ProductDetails,
+  title: string,
+  productId: string,
   name: string,
   date: string,
   time: string,
-  qty: number
+  qty: number,
+  total: number
 ): Promise<void> {
   const mailOptions = {
     from: `"BookIt: Experiences & Slots" <${process.env.EMAIL_USER}>`,
@@ -70,9 +70,7 @@ export async function sendOrderConfirmation(
             <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
               <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Experience:</strong></td>
-                <td style="padding: 8px; border-bottom: 1px solid #eee;">${
-                  product.title
-                }</td>
+                <td style="padding: 8px; border-bottom: 1px solid #eee;">${title}</td>
               </tr>
               <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Date:</strong></td>
@@ -84,12 +82,14 @@ export async function sendOrderConfirmation(
                 <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Time Slot:</strong></td>
                 <td style="padding: 8px; border-bottom: 1px solid #eee;">${time}</td>
               </tr>
+               <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Slot booked:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #eee;">${qty}</td>
+              </tr>
               <tr>
                 <td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Price:</strong></td>
                 <td style="padding: 8px; border-bottom: 1px solid #eee;">
-                  ${product.price.currency} ${(
-      product.price.basePrice * qty
-    ).toFixed(2)}
+                  INR ${total.toFixed(2)}
                 </td>
               </tr>
             </table>
@@ -98,7 +98,7 @@ export async function sendOrderConfirmation(
             <p>We look forward to hosting you!</p>
 
             <div style="margin-top: 30px; text-align: center;">
-              <a href="${product.slug ? product.slug : "#"}" 
+              <a href="${`${process.env.NEXT_PUBLIC_BASE_URL}/experiences/${productId}`}" 
                  style="background: #16a085; color: #fff; padding: 12px 20px; text-decoration: none; border-radius: 5px;">
                 View Booking
               </a>
@@ -114,9 +114,7 @@ export async function sendOrderConfirmation(
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Booking confirmation sent:", info.messageId);
   } catch (error) {
-    console.error("❌ Error sending booking email:", error);
     throw new Error("Could not send booking confirmation email");
   }
 }

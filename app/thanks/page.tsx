@@ -1,8 +1,14 @@
 import { FaCheckCircle } from "react-icons/fa";
 import Link from "next/link";
 import AppLayout from "@/components/Layouts/AppLayout";
-
-export default function BookingConfirmed() {
+interface PageProps {
+  params: { slug: string };
+  searchParams: {
+    ref?: string;
+  };
+}
+export default async function BookingConfirmed({ searchParams }: PageProps) {
+  const { ref } = await searchParams;
   return (
     <AppLayout>
       <div className="flex flex-col items-center justify-center min-h-[80vh] bg-gray-50">
@@ -15,7 +21,15 @@ export default function BookingConfirmed() {
         </h1>
 
         {/* Reference ID */}
-        <p className="text-gray-500 mt-2">Ref ID: HUF56&SO</p>
+        <div className="text-center">
+          <p className="text-gray-500 mt-2">Ref ID: {ref}</p>
+
+          <p className="text-sm font-light text-gray-400">
+            We have set the details to you
+            <span className="text-dark-15 font-medium"> email </span>
+            you can check.
+          </p>
+        </div>
 
         {/* Back Button */}
         <Link
