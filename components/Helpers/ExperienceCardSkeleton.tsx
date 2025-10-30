@@ -3,7 +3,7 @@ import { FC } from "react";
 
 const ExperienceCardSkeleton: FC = () => {
   return (
-    <div className="max-w-sm w-full bg-white rounded-xl overflow-hidden border border-gray-50 animate-pulse flex flex-col">
+    <div className="w-full bg-white rounded-xl overflow-hidden border border-gray-50 animate-pulse flex flex-col">
       <div className="relative h-56 w-full bg-gray-200" />
 
       <div className="flex flex-col justify-between flex-1 p-4">
