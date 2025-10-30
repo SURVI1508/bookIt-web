@@ -8,7 +8,7 @@ export interface ISlot {
   time: string;
   capacity: number;
   booked: number;
-  status: "available" | "soldout";
+  status: "available" | "soldout"|"limited";
 }
 
 export interface IDate {
@@ -84,7 +84,7 @@ const SlotSchema = new Schema<ISlot>(
     booked: { type: Number, default: 0 },
     status: {
       type: String,
-      enum: ["available", "soldout"],
+      enum: ["available", "soldout","limited"],
       default: "available",
     },
   },
