@@ -1,7 +1,3 @@
-Here’s a professional and visually organized **GitHub README.md** file for your **BookIt: Experiences & Slots** MERN (Next.js full-stack) app 👇
-
----
-
 ````markdown
 # 🌍 BookIt: Experiences & Slots
 
@@ -88,6 +84,15 @@ Build a complete full-stack platform that allows users to:
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
 | `POST` | `/api/bookings` | Create a booking with user details and pricing |
+
+
+### 🔐 Authentication
+| Method | Endpoint | Description |
+|--------|-----------|-------------|
+| `POST` | `/api/auth/register` | Register a new user |
+| `POST` | `/api/auth/verify-otp` | Verify OTP sent via email |
+| `POST` | `/api/auth/login` | Login user with credentials |
+| `POST` | `/api/auth/logout` | Logout user and clear session |
 
 ---
 
@@ -209,6 +214,9 @@ bookit/
 * 📊 Admin dashboard for managing experiences and bookings
 * 💬 SMS notifications for booking confirmation
 * 💵 Payment gateway integration
+* SEO optimization (sitemap,image sitemap)
+* performance optimization
+* caching etc.
 
 ---
 
