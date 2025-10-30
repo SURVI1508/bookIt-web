@@ -20,7 +20,7 @@ const Footer = () => {
             target="_blank"
             className="text-sm  text-dark-25 font-medium "
           >
-            Crafted with ❤️ by Sourav
+            Crafted with ❤️ by <span className="text-rose-400"> Sourav </span>
           </Link>
           <p className="text-center text-xs font-light">
             © 2025 : BookIt . All Rights Reserved.
