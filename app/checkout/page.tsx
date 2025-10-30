@@ -1,5 +1,6 @@
 import CheckoutPage from "@/components/Checkout";
 import AppLayout from "@/components/Layouts/AppLayout";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -57,6 +58,12 @@ async function getProduct(slug: string): Promise<Product | null> {
     return null;
   }
 }
+
+export const metadata: Metadata = {
+  title: "Checkou : BookIt",
+  description:
+    "Web application where users can explore travel experiences,select available slots, and complete bookings",
+};
 
 const Page = async ({ searchParams }: PageProps) => {
   const { time, date, id, quantity } = await searchParams;

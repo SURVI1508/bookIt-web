@@ -1,12 +1,18 @@
 import { FaCheckCircle } from "react-icons/fa";
 import Link from "next/link";
 import AppLayout from "@/components/Layouts/AppLayout";
+import { Metadata } from "next";
 interface PageProps {
   params: { slug: string };
   searchParams: {
     ref?: string;
   };
 }
+export const metadata: Metadata = {
+  title: "Thanks : Booking confirmed",
+  description:
+    "Web application where users can explore travel experiences,select available slots, and complete bookings",
+};
 export default async function BookingConfirmed({ searchParams }: PageProps) {
   const { ref } = await searchParams;
   return (
