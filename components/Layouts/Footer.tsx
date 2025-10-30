@@ -15,7 +15,11 @@ const Footer = () => {
               className=""
             />
           </Link>
-          <Link href="" className="text-sm  text-dark-25 font-medium ">
+          <Link
+            href="https://survi-dev.vercel.app"
+            target="_blank"
+            className="text-sm  text-dark-25 font-medium "
+          >
             Crafted with ❤️ by Sourav
           </Link>
           <p className="text-center text-xs font-light">
