@@ -7,7 +7,6 @@ import Button from "../common/Button";
 import ExperienceCardSkeleton from "../Helpers/ExperienceCardSkeleton";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-// ====== Define interfaces ======
 interface Location {
   city?: string;
   state?: string;
@@ -107,7 +106,6 @@ const ExperienceListingSection = ({ query }: { query?: string }) => {
                   description={shortDescription ?? ""}
                   price={price?.basePrice ?? 0}
                   route={`/experiences/${_id}`}
-                  onViewDetails={() => alert("View details clicked!")}
                 />
               );
             })}

@@ -36,7 +36,7 @@ export const useForm = <T extends Record<string, any>>({
 
     let validationErrors: Record<string, string> = {};
 
-    // ✅ Zod
+    // Zod
     if ("safeParse" in (schema || {})) {
       const result = (schema as any).safeParse(formData);
       if (!result.success) {
@@ -47,7 +47,7 @@ export const useForm = <T extends Record<string, any>>({
       }
     }
 
-    // ✅ Yup
+    // Yup
     else if ("validateSync" in (schema || {})) {
       try {
         (schema as any).validateSync(formData, { abortEarly: false });
@@ -58,7 +58,7 @@ export const useForm = <T extends Record<string, any>>({
       }
     }
 
-    // ✅ Custom validation
+    // Custom validation
     if (typeof validate === "function") {
       const customErrors = validate(formData);
       if (customErrors) {

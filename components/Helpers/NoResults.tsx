@@ -20,15 +20,12 @@ const NoResults: React.FC<NoResultsProps> = ({ query = "", onClear }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
-      {/* Icon */}
       <BiSearchAlt className="text-gray-400 text-6xl mb-4" />
 
-      {/* Heading */}
       <h2 className="text-xl font-semibold text-gray-800">
         No results found for <span className="text-blue-600">"{query}"</span>
       </h2>
 
-      {/* Subtext */}
       <p className="text-gray-500 mt-2">
         Try adjusting your search or using different keywords.
       </p>

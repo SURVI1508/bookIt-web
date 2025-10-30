@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // ✅ Case-insensitive match
+  // Case-insensitive match
   const promo = await PromoCode.findOne({
     code: { $regex: new RegExp(`^${code}$`, "i") },
   });

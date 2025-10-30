@@ -43,7 +43,6 @@ const Button: React.FC<ButtonProps> = ({
   loading = false,
   ...props
 }) => {
-  // Base + variant + custom colors
   const baseClasses =
     "inline-flex items-center text-sm justify-center gap-2  transition duration-200 focus:outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50";
   const variantClass = variantClasses[variant] || variantClasses.default;

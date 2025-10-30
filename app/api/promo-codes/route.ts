@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import PromoCode from "@/models/PromoCode";
 import { getUserFromRequest } from "@/lib/auth"; // your existing JWT helper
 
-// 🧩 GET All (Public)
+// GET All (Public)
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// 🧩 POST (Admin Only)
+// POST (Admin Only)
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// 🧩 PUT (Admin Only)
+// PUT (Admin Only)
 export async function PUT(req: NextRequest) {
   try {
     await connectDB();
@@ -106,7 +106,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// 🧩 DELETE (Admin Only)
+// DELETE (Admin Only)
 export async function DELETE(req: NextRequest) {
   try {
     await connectDB();

@@ -221,7 +221,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
   return (
     <main className="w-full min-h-screen py-12">
       <div className="container space-y-5">
-        {/* Header */}
         <button
           onClick={() => router.back()}
           className="text-base hover:gap-2 transition-all duration-100 text-dark-15  inline-flex gap-3 items-center "
@@ -230,7 +229,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ data, product }) => {
           Checkout
         </button>
 
-        {/* Main Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Form Section */}
           <div className="flex-1 h-fit sm:bg-gray-50 sm:rounded-xl sm:p-6 space-y-4">

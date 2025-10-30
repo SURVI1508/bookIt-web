@@ -42,9 +42,6 @@ html {
   font-family: var(--font-kumbh), sans-serif;
 }
 
-body {
-}
-
 @layer utilities {
   .container {
     @apply px-5 md:px-12  lg:px-20 xl:px-0 mx-auto lg:w-[98%];

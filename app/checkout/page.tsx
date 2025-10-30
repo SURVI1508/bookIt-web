@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-// ✅ Combine params + searchParams in one interface
+// Combine params + searchParams in one interface
 interface PageProps {
   params: { slug: string };
   searchParams: {
@@ -61,7 +61,7 @@ async function getProduct(slug: string): Promise<Product | null> {
 const Page = async ({ searchParams }: PageProps) => {
   const { time, date, id, quantity } = await searchParams;
 
-  // ✅ Safely handle undefined `id`
+  // Safely handle undefined `id`
   const productData = id ? await getProduct(id) : null;
 
   if (!productData) return redirect("/");

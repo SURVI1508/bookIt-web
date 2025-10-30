@@ -10,7 +10,6 @@ interface ExperienceCardProps {
   description: string;
   price: number;
   route: string;
-  onViewDetails?: () => void;
 }
 
 const ExperienceCard: FC<ExperienceCardProps> = ({
@@ -20,10 +19,9 @@ const ExperienceCard: FC<ExperienceCardProps> = ({
   description,
   price,
   route,
-  onViewDetails,
 }) => {
   return (
-    <div className="max-w-sm w-full bg-white rounded-2xl overflow-hidden  transition-shadow duration-300 flex flex-col">
+    <div className=" w-full bg-white rounded-2xl overflow-hidden  transition-shadow duration-300 flex flex-col">
       {/* Image */}
       <div className="relative h-56 bg-gray-200 w-full">
         <Image

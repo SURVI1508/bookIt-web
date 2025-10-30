@@ -119,7 +119,7 @@ export async function sendOrderConfirmation(
   }
 }
 
-// ✅ Used only in dev/test mode
+// Used only in dev/test mode
 export function isMasterOTP(entered: string): boolean {
   return entered === process.env.MASTER_OTP;
 }

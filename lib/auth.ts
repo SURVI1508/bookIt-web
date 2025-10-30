@@ -20,7 +20,7 @@ export interface DecodedToken extends JwtPayload {
   role: string;
 }
 
-// ✅ Generate JWT
+// Generate JWT
 export const generateToken = (user: UserPayload): string => {
   return jwt.sign(
     {
@@ -33,7 +33,7 @@ export const generateToken = (user: UserPayload): string => {
   );
 };
 
-// ✅ Verify JWT
+// Verify JWT
 export const verifyToken = (token: string): DecodedToken | null => {
   try {
     return jwt.verify(token, JWT_SECRET_KEY) as DecodedToken;
@@ -42,7 +42,7 @@ export const verifyToken = (token: string): DecodedToken | null => {
   }
 };
 
-// ✅ Get user from Next.js request (App Router)
+// Get user from Next.js request (App Router)
 export const getUserFromRequest = (req: NextRequest): DecodedToken | null => {
   const token = req.cookies.get("token")?.value;
   if (!token) return null;

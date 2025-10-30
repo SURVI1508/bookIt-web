@@ -80,12 +80,12 @@ export async function POST(req: Request) {
         );
       }
 
-      // ✅ Calculate subtotal before discount
+      // Calculate subtotal
       const basePrice = Number(product?.price?.basePrice || 0);
       const quantity = qty || 1;
       const subtotal = basePrice * quantity;
 
-      // ✅ Handle both discount types
+      // Handle both discount types
       if (promo.discountType === "percent") {
         discount = Math.min((subtotal * promo.discountValue) / 100, subtotal); // cap at subtotal
       } else if (promo.discountType === "fixed") {

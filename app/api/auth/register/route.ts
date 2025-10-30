@@ -22,7 +22,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { name, userName, email, phone, password, role, avatar, biography } =
       body;
 
-    // ✅ Validate required fields
+    // Validate required fields
     if (!name || !userName || !email || !phone || !password) {
       return NextResponse.json(
         { error: "All required fields must be filled" },
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // ✅ Check if verified user already exists
+    // Check if verified user already exists
     const existingVerified = await User.findOne({
       $or: [{ email }, { userName }],
       isVerified: true,
@@ -43,10 +43,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // ✅ Generate OTP
+    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // ✅ Check if unverified user exists
+    // Check if unverified user exists
     const existingUnverified = await User.findOne({
       $or: [{ email }, { userName }],
       isVerified: false,
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       });
     }
 
-    // ✅ Send OTP
+    // Send OTP
     await sendOTP(email, otp);
 
     return NextResponse.json(
